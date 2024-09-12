@@ -1,14 +1,37 @@
+// ignore_for_file: prefer_const_constructors
+import 'package:d_session/d_session.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_motobike_app/firebase_options.dart';
+import 'package:flutter_motobike_app/pages/booking_page.dart';
+import 'package:flutter_motobike_app/pages/chatting_page.dart';
+import 'package:flutter_motobike_app/pages/checkout_page.dart';
+import 'package:flutter_motobike_app/pages/detail_page.dart';
+import 'package:flutter_motobike_app/pages/discover_page.dart';
+import 'package:flutter_motobike_app/pages/pin_page.dart';
+import 'package:flutter_motobike_app/pages/signin_page.dart';
+import 'package:flutter_motobike_app/pages/signup_page.dart';
+import 'package:flutter_motobike_app/pages/splash_screen.dart';
+import 'package:flutter_motobike_app/pages/success_booking_page.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import 'models/bike.dart';
 
 Future<void> main() async {
   // Tipe firebase plugin jadi harus ditambah si WidgetsFluBin
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(
-    const MyApp(),
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  SystemChrome.setPreferredOrientations(
+    [DeviceOrientation.portraitUp],
+  ).then((value) {
+    runApp(
+      const MyApp(),
+    );
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -17,60 +40,62 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        scaffoldBackgroundColor: Color(0XFFEFEFF0),
+        textTheme: GoogleFonts.poppinsTextTheme(),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+      home: FutureBuilder(
+        future: DSession.getUser(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          }
+          if (snapshot.data == null) return SplashScreen();
+          return DiscoverPage();
+        },
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+      routes: {
+        '/discover': (context) => DiscoverPage(),
+        '/signup': (context) => SignupPage(),
+        '/signin': (context) => SigninPage(),
+        '/detail': (context) {
+          String bikeId = ModalRoute.of(context)!.settings.arguments as String;
+          return DetailPage(bikeId: bikeId);
+        },
+        '/booking': (context) {
+          Bike bike = ModalRoute.of(context)!.settings.arguments as Bike;
+          return BookingPage(bike: bike);
+        },
+        '/checkout': (context) {
+          Map data = ModalRoute.of(context)!.settings.arguments as Map;
+          Bike bike = data['bike'];
+          String startDate = data['startDate'];
+          String endDate = data['endtDate'];
+          return CheckoutPage(
+            bike: bike,
+            startDate: startDate,
+            endDate: endDate,
+          );
+        },
+        '/pin': (context) {
+          Bike bike = ModalRoute.of(context)!.settings.arguments as Bike;
+          return PinPage(bike: bike);
+        },
+        '/success-booking': (context) {
+          Bike bike = ModalRoute.of(context)!.settings.arguments as Bike;
+          return SuccessBookingPage(bike: bike);
+        },
+        '/chatting': (context) {
+          Map data = ModalRoute.of(context)!.settings.arguments as Map;
+          String uid = data['uid'];
+          String userName = data['userName'];
+          return ChattingPage(
+            uid: uid,
+            userName: userName,
+          );
+        },
+      },
     );
   }
 }
