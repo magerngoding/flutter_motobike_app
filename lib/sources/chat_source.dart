@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:d_session/d_session.dart';
 import 'package:flutter_motobike_app/models/chat.dart';
 
 class ChatSource {
