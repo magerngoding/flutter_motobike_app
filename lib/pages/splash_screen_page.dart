@@ -22,8 +22,9 @@ class SplashScreenPage extends StatelessWidget {
           Gap(10),
           Expanded(
             child: Transform.translate(
-                offset: Offset(-99, 0),
-                child: Image.asset('assets/splash_screen.png')),
+              offset: Offset(-99, 0),
+              child: Image.asset('assets/splash_screen.png'),
+            ),
           ),
           Gap(10),
           Text(
@@ -40,6 +41,7 @@ class SplashScreenPage extends StatelessWidget {
             child: Text(
               "We provide all beautifull motobike for you roadtrip and great memories of life.",
               style: TextStyle(
+                height: 1.7,
                 fontSize: 16.0,
                 fontWeight: FontWeight.w500,
                 color: Color(0XFF070623),
@@ -51,7 +53,9 @@ class SplashScreenPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: ButtonPrimary(
               text: 'Explore Now',
-              onTap: () {},
+              onTap: () {
+                Navigator.pushReplacementNamed(context, '/signup');
+              },
             ),
           ),
           Gap(50),

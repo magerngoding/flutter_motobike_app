@@ -12,7 +12,7 @@ import 'package:flutter_motobike_app/pages/discover_page.dart';
 import 'package:flutter_motobike_app/pages/pin_page.dart';
 import 'package:flutter_motobike_app/pages/signin_page.dart';
 import 'package:flutter_motobike_app/pages/signup_page.dart';
-import 'package:flutter_motobike_app/pages/splash_screen.dart';
+import 'package:flutter_motobike_app/pages/splash_screen_page.dart';
 import 'package:flutter_motobike_app/pages/success_booking_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return CircularProgressIndicator();
           }
-          if (snapshot.data == null) return SplashScreen();
+          if (snapshot.data == null) return SplashScreenPage();
           return DiscoverPage();
         },
       ),

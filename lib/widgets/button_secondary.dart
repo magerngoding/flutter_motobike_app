@@ -1,11 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first, prefer_const_constructors
 import 'package:flutter/material.dart';
 
-class ButtonPrimary extends StatelessWidget {
+class ButtonSecondary extends StatelessWidget {
   final VoidCallback onTap;
   final String text;
 
-  const ButtonPrimary({
+  const ButtonSecondary({
     Key? key,
     required this.onTap,
     required this.text,
@@ -17,7 +17,7 @@ class ButtonPrimary extends StatelessWidget {
       borderRadius: BorderRadius.all(
         Radius.circular(50.0),
       ),
-      color: Color(0XFFFFBC1C),
+      color: Colors.white,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.all(

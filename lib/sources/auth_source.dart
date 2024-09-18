@@ -9,8 +9,8 @@ import 'package:flutter_motobike_app/models/account.dart';
 
 class AuthSource {
   static Future<String> signUp(
-    String email,
     String name,
+    String email,
     String password,
   ) async {
     try {
@@ -19,31 +19,27 @@ class AuthSource {
         email: email,
         password: password,
       );
-
       Account account = Account(
         uid: credential.user!.uid,
         name: name,
         email: email,
       );
-
       await FirebaseFirestore.instance
           .collection('Users')
           .doc(account.uid)
           .set(account.toJson());
-
       return 'success';
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        return ('The password provided is too weak.');
+        return 'The password provided is too weak.';
       } else if (e.code == 'email-already-in-use') {
-        return ('The account already exists for that email.');
+        return 'The account already exists for that email.';
       }
-
       log(e.toString());
-      return 'Something wrong';
+      return "something wrong";
     } catch (e) {
       log(e.toString());
-      return 'Something wrong';
+      return "something wrong";
     }
   }
 
