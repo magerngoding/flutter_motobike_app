@@ -58,12 +58,12 @@ class AuthSource {
           .doc(credential.user!.uid)
           .get();
       await DSession.setUser(Map.from(accountDoc.data()!));
-      return 'Success';
+      return 'success';
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        return ('No user found for that email.');
+        return 'No user found for that email.';
       } else if (e.code == 'wrong-password') {
-        return ('Wrong password provided for that user.');
+        return 'Wrong password provided for that user.';
       }
 
       log(e.toString());
