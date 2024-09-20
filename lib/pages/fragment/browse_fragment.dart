@@ -1,10 +1,38 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:flutter_motobike_app/controller/browse_featured_controller.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 
-class BrowseFragment extends StatelessWidget {
+class BrowseFragment extends StatefulWidget {
   const BrowseFragment({super.key});
+
+  @override
+  State<BrowseFragment> createState() => _BrowseFragmentState();
+}
+
+class _BrowseFragmentState extends State<BrowseFragment> {
+  // inisialisasi
+  final browseFeaturedController = Get.put(BrowseFeaturedController());
+
+  // trigerred
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) {
+        browseFeaturedController.fetchFeatured();
+      },
+    );
+    super.initState();
+  }
+
+  // clear data controller biar ga ketumpuk2
+  @override
+  void dispose() {
+    Get.delete<BrowseFeaturedController>(force: true);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

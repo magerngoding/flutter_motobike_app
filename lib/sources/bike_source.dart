@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/bike.dart';
 
 class BikeSource {
-  static Future<List<Bike>?> fetchFeaturedBike() async {
+  static Future<List<Bike>?> fetchFeaturedBikes() async {
     try {
       final ref = FirebaseFirestore.instance
           .collection('Bikes')
