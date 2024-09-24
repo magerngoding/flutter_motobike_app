@@ -129,7 +129,7 @@ class _BrowseFragmentState extends State<BrowseFragment> {
               ExtendedImage.network(
                 bike.image,
                 width: 220,
-                height: 170,
+                height: 171,
               ),
               if (isTrending)
                 Container(
