@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDLYTzBNna0rv_7LzOg4Yo5FmiEe4sPzBo',
-    appId: '1:477534044858:android:6829a70910272e7daeb883',
+    appId: '1:477534044858:android:a5434dc1be5cc637aeb883',
     messagingSenderId: '477534044858',
     projectId: 'course-motobike-3d695',
     storageBucket: 'course-motobike-3d695.appspot.com',
@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'course-motobike-3d695.appspot.com',
     measurementId: 'G-NGQCSS38PR',
   );
+
 }

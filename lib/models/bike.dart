@@ -5,7 +5,7 @@ class Bike {
   final String image;
   final String level;
   final String name;
-  final num price; // untuk tipe num -> desimal atau bulat tetap kebaca
+  final num price;
   final num rating;
   final String release;
   Bike({
