@@ -11,7 +11,7 @@ class BrowseNewsController extends GetxController {
   String get status => _status.value;
   set status(String n) => _status.value = n;
 
-  fetchNews() async {
+  fetchNewst() async {
     status = 'loading';
 
     final bikes = await BikeSource.fetchNewestBikes();

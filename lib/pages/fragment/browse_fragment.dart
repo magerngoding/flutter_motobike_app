@@ -1,8 +1,10 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, curly_braces_in_flow_control_structures
 
 import 'package:extended_image/extended_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_motobike_app/controller/booking_status_controller.dart';
 import 'package:flutter_motobike_app/controller/browse_featured_controller.dart';
 import 'package:flutter_motobike_app/controller/browse_news_controller.dart';
 import 'package:flutter_motobike_app/widgets/failed_ui.dart';
@@ -24,13 +26,18 @@ class _BrowseFragmentState extends State<BrowseFragment> {
   // inisialisasi
   final browseFeaturedController = Get.put(BrowseFeaturedController());
   final browseNewsController = Get.put(BrowseNewsController());
+  final bookingStatusController = Get.put(BookingStatusController());
 
   // trigerred
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       browseFeaturedController.fetchFeatured();
-      browseNewsController.fetchNews();
+      browseNewsController.fetchNewst();
+      bookingStatusController.bike = {
+        'name': 'Enfielding Pro',
+        'image': 'https://images2.alphacoders.com/249/24912.jpg',
+      };
     });
     super.initState();
   }
@@ -40,6 +47,7 @@ class _BrowseFragmentState extends State<BrowseFragment> {
   void dispose() {
     Get.delete<BrowseFeaturedController>(force: true);
     Get.delete<BrowseNewsController>(force: true);
+    Get.delete<BookingStatusController>(force: true);
     super.dispose();
   }
 
@@ -51,6 +59,7 @@ class _BrowseFragmentState extends State<BrowseFragment> {
         children: [
           Gap(30 + MediaQuery.of(context).padding.top),
           buildHeader(),
+          buildBookingStatus(),
           Gap(30),
           buildCategories(),
           Gap(30),
@@ -60,6 +69,87 @@ class _BrowseFragmentState extends State<BrowseFragment> {
           Gap(110),
         ],
       ),
+    );
+  }
+
+  Widget buildBookingStatus() {
+    return Obx(
+      () {
+        Map bike = bookingStatusController.bike;
+        if (bike.isEmpty) return SizedBox();
+        return Container(
+          height: 96,
+          margin: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+          decoration: BoxDecoration(
+            color: Color(0XFF4A1DFF),
+            borderRadius: BorderRadius.all(
+              Radius.circular(20.0),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Color(0XFF4A1DFF).withOpacity(0.25),
+                blurRadius: 20,
+                offset: Offset(0, 16),
+              ),
+            ],
+          ),
+          child: Stack(
+            // biar gambar yang digeser kepotong pake STACK
+            children: [
+              Positioned(
+                left: -20, // mundurin paksa
+                top: 0,
+                bottom: 0,
+                child: ExtendedImage.network(
+                  bike['image'],
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.fitWidth,
+                ),
+              ),
+              Positioned(
+                top: 0,
+                bottom: 0,
+                left: 70,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        text: 'Your Booking ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16.0,
+                          color: Colors.white,
+                          height: 1.5,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: bike['name'],
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16.0,
+                              color: Color(0XFFFFBC1C),
+                            ),
+                          ),
+                          TextSpan(
+                            text: '\nhas been delivered to.',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
