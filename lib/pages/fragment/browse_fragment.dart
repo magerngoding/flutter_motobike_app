@@ -1,9 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, curly_braces_in_flow_control_structures
 
 import 'package:extended_image/extended_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_motobike_app/controller/booking_status_controller.dart';
 import 'package:flutter_motobike_app/controller/browse_featured_controller.dart';
 import 'package:flutter_motobike_app/controller/browse_news_controller.dart';
@@ -34,10 +32,10 @@ class _BrowseFragmentState extends State<BrowseFragment> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       browseFeaturedController.fetchFeatured();
       browseNewsController.fetchNewst();
-      bookingStatusController.bike = {
-        'name': 'Enfielding Pro',
-        'image': 'https://images2.alphacoders.com/249/24912.jpg',
-      };
+      // bookingStatusController.bike = {
+      //   'name': 'Enfielding Pro',
+      //   'image': 'https://images2.alphacoders.com/249/24912.jpg',
+      // };
     });
     super.initState();
   }
