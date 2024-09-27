@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 
 class DetailController extends GetxController {
   final Rx<Bike> _bike = Bike.empty.obs;
-  Bike get list => _bike.value;
+  Bike get bike => _bike.value;
   set bike(Bike n) => _bike.value = n;
 
   final _status = ''.obs;
