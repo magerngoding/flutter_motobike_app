@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first, prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_motobike_app/widgets/button_primary.dart';
 import 'package:flutter_motobike_app/widgets/input.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
@@ -55,6 +56,98 @@ class _BookingPageState extends State<BookingPage> {
           buildInput(),
           Gap(24),
           buildAgency(),
+          Gap(24),
+          buildInsurance(),
+          Gap(24),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: ButtonPrimary(
+              onTap: () {
+                Navigator.pushNamed(context, '/checkout', arguments: {
+                  'bike': widget.bike,
+                  'startDate': edtStarDate.text,
+                  'endtDate': edtEndDate.text,
+                });
+              },
+              text: 'Proceed to Checkout',
+            ),
+          ),
+          Gap(36),
+        ],
+      ),
+    );
+  }
+
+  Widget buildInsurance() {
+    final listAgency = ['Revolte', 'KBP City', 'Sumedap'];
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Insurance",
+            style: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.w600,
+              color: Color(0XFF070623),
+            ),
+          ),
+          Gap(12),
+          SizedBox(
+            height: 52,
+            child: DropdownButtonFormField(
+              icon: Image.asset(
+                "assets/ic_arrow_down.png",
+                width: 20.0,
+                height: 20.0,
+              ),
+              value: 'Set available insurance',
+              items: [
+                'Set available insurance',
+                'Jiwa perkara, Kejiwaan',
+                'Kejiwaan',
+                'Stuck',
+              ].map((e) {
+                return DropdownMenuItem(
+                  value: e,
+                  child: Text(
+                    e,
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0XFF070623),
+                    ),
+                  ),
+                );
+              }).toList(),
+              onChanged: (value) {},
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.only(right: 16),
+                prefixIcon: UnconstrainedBox(
+                  // UnconstrainedBox biar tidak terpengaruh dari ukuran parents
+                  alignment: Alignment(0.2, 0), // untuk geser icon
+                  child: Image.asset(
+                    "assets/ic_insurance.png",
+                    width: 24.0,
+                    height: 24.0,
+                  ),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(50),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(50),
+                  borderSide: BorderSide(
+                    color: Color(0XFF4A1DFF),
+                    width: 2,
+                  ),
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );
