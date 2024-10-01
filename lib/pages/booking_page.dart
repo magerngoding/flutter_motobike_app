@@ -1,7 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first, prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_motobike_app/widgets/input.dart';
 import 'package:gap/gap.dart';
+import 'package:intl/intl.dart';
 
 import '../models/bike.dart';
 
@@ -18,6 +20,27 @@ class BookingPage extends StatefulWidget {
 }
 
 class _BookingPageState extends State<BookingPage> {
+  final edtName = TextEditingController();
+  final edtStarDate = TextEditingController();
+  final edtEndDate = TextEditingController();
+
+  pickDate(TextEditingController editingController) {
+    showDatePicker(
+            // showdatepicker untuk pop up calendar
+            context: context,
+            firstDate: DateTime.now(),
+            lastDate: DateTime.now().add(Duration(days: 30)),
+            initialDate: DateTime.now() // inisial pas dibuka tanggal sekarang
+            )
+        .then(
+      (pickDate) {
+        if (pickDate == null) return;
+
+        editingController.text = DateFormat('dd MMM yyy').format(pickDate);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,8 +49,138 @@ class _BookingPageState extends State<BookingPage> {
         children: [
           Gap(20 + MediaQuery.of(context).padding.top),
           buildHeader(),
-          Gap(30),
-          buildSnippetBike()
+          Gap(24),
+          buildSnippetBike(),
+          Gap(24),
+          buildInput(),
+          Gap(24),
+          buildAgency(),
+        ],
+      ),
+    );
+  }
+
+  Widget buildAgency() {
+    final listAgency = ['Revolte', 'KBP City', 'Sumedap'];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24),
+          child: Text(
+            "Agency",
+            style: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.w600,
+              color: Color(0XFF070623),
+            ),
+          ),
+        ),
+        Gap(12),
+        SizedBox(
+          height: 120,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: listAgency.length,
+            itemBuilder: (context, index) {
+              return Container(
+                margin: EdgeInsets.only(
+                  left: index == 0 ? 24 : 8,
+                  right: index == listAgency.length - 1 ? 24 : 8,
+                ),
+                width: 120,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20.0),
+                  ),
+                  border: index == 1 // jika index ke 1 ada border biru nya
+                      ? Border.all(
+                          color: Color(0XFF4A1DFF),
+                          width: 3,
+                        )
+                      : null,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      "assets/agency.png",
+                      width: 38.0,
+                      height: 38.0,
+                    ),
+                    Gap(10),
+                    Text(
+                      listAgency[index],
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0XFF070623),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget buildInput() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Complete Name",
+            style: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          Gap(12),
+          Input(
+            icon: 'assets/ic_profile.png',
+            hint: 'Write your real name',
+            editingController: edtName,
+          ),
+          Gap(16),
+          Text(
+            "Start Rent Date",
+            style: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          Gap(12),
+          Input(
+            icon: 'assets/ic_calendar.png',
+            hint: 'Choose your date',
+            editingController: edtStarDate,
+            enable: false,
+            onTapBox: () => pickDate(edtStarDate),
+          ),
+          Gap(16),
+          Text(
+            "End",
+            style: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          Gap(12),
+          Input(
+            icon: 'assets/ic_calendar.png',
+            hint: 'Choose your date',
+            editingController: edtEndDate,
+            enable: false,
+            onTapBox: () => pickDate(edtEndDate),
+          ),
+          Gap(16),
         ],
       ),
     );
