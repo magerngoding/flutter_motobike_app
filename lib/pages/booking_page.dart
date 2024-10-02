@@ -1,4 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first, prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: public_member_api_docs, sort_constructors_first, prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_local_variable
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_motobike_app/widgets/button_primary.dart';
@@ -124,6 +124,8 @@ class _BookingPageState extends State<BookingPage> {
               }).toList(),
               onChanged: (value) {},
               decoration: InputDecoration(
+                fillColor: Colors.white, // ngasih warna ke form dropdown
+                filled: true,
                 contentPadding: EdgeInsets.only(right: 16),
                 prefixIcon: UnconstrainedBox(
                   // UnconstrainedBox biar tidak terpengaruh dari ukuran parents
