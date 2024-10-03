@@ -1,6 +1,10 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first, prefer_const_constructors, prefer_const_literals_to_create_immutables
+import 'package:d_session/d_session.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_motobike_app/models/account.dart';
+import 'package:flutter_motobike_app/widgets/button_primary.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
@@ -23,8 +27,64 @@ class CheckoutPage extends StatefulWidget {
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
-  num balance = 9500000;
-  double grandTotal = 9203500;
+  // num balance = 9500000;
+  num balance = 0;
+  double grandTotal = 10000000;
+
+  // inialisasi
+  FToast fToast = FToast();
+
+  checkoutNow() {
+    if (balance < grandTotal) {
+      Widget notifUI = Transform.translate(
+        offset: Offset(0, -50),
+        child: Container(
+          height: 96,
+          padding: const EdgeInsets.symmetric(
+            vertical: 24,
+            horizontal: 20,
+          ),
+          decoration: BoxDecoration(
+            color: Color(0XFFFF2055),
+            borderRadius: BorderRadius.all(
+              Radius.circular(20.0),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Color(0XFFFF2055).withOpacity(0.25),
+                blurRadius: 20,
+                offset: Offset(0, 16),
+              ),
+            ],
+          ),
+          child: Text(
+            "Failed to checkout. Your wallet has no enough balance at this moment",
+            style: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+              height: 1.5,
+            ),
+          ),
+        ),
+      );
+      // Cara menampilkan pop up nya
+      fToast.showToast(
+        child: notifUI,
+        gravity: ToastGravity.TOP,
+        toastDuration: const Duration(milliseconds: 2500),
+      );
+      return;
+    }
+
+    Navigator.pushNamed(context, '/pin', arguments: widget.bike);
+  }
+
+  @override
+  void initState() {
+    fToast.init(context);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +98,174 @@ class _CheckoutPageState extends State<CheckoutPage> {
           buildSnippetBike(),
           Gap(24),
           buildDetails(),
+          Gap(24),
+          buildPaymentMethod(),
+          Gap(30),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            child: ButtonPrimary(
+              onTap: () => checkoutNow(),
+              text: 'Checkout Now',
+            ),
+          ),
+          Gap(30),
         ],
       ),
+    );
+  }
+
+  Widget buildPaymentMethod() {
+    final payments = [
+      ['My Wallets', 'assets/wallet.png'],
+      ['Credit Card', 'assets/cards.png'],
+      ['Cash', 'assets/cash.png'],
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24),
+          child: Text(
+            "Payment Method",
+            style: TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.w600,
+              color: Color(0XFF070623),
+            ),
+          ),
+        ),
+        Gap(12),
+        SizedBox(
+          height: 120,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: payments.length,
+            itemBuilder: (context, index) {
+              return Container(
+                width: 130,
+                margin: EdgeInsets.only(
+                  left: index == 0 ? 24 : 8,
+                  right: index == payments.length - 1 ? 24 : 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(20.0),
+                  ),
+                  border: index == 0 // jika index ke 1 ada border biru nya
+                      ? Border.all(
+                          color: Color(0XFF4A1DFF),
+                          width: 3,
+                        )
+                      : null,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      payments[index][1],
+                      width: 38.0,
+                      height: 38.0,
+                    ),
+                    Gap(10),
+                    Text(
+                      payments[index][0],
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0XFF070623),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+        Gap(24),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24),
+          child: FutureBuilder(
+            future: DSession.getUser(),
+            builder: (context, snapshoot) {
+              if (snapshoot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              }
+              Account account = Account.fomJson(
+                Map.from(snapshoot.data!),
+              );
+              return Stack(
+                children: [
+                  Image.asset(
+                    "assets/bg_wallet.png",
+                    width: double.infinity,
+                    fit: BoxFit.fitWidth,
+                  ),
+                  Positioned(
+                    left: 20,
+                    right: 20,
+                    bottom: 20,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          account.name,
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Text(
+                          "02/30",
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    left: 20,
+                    bottom: 0,
+                    top: 0,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Balance",
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Gap(6),
+                        Text(
+                          NumberFormat.currency(
+                            decimalDigits: 0,
+                            locale: 'en_US',
+                            symbol: '\$',
+                          ).format(balance),
+                          style: TextStyle(
+                            fontSize: 36.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        )
+      ],
     );
   }
 
@@ -95,9 +321,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
         Text(
           title,
           style: TextStyle(
-              fontSize: 16.0,
-              fontWeight: FontWeight.bold,
-              color: Color(0XFF838384)),
+            fontSize: 16.0,
+            fontWeight: FontWeight.bold,
+            color: Color(0XFF838384),
+          ),
         ),
         Spacer(),
         Text(
@@ -127,7 +354,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     return Row(
       children: [
         Text(
-          data,
+          title,
           style: TextStyle(
             fontSize: 16.0,
             fontWeight: FontWeight.bold,
@@ -154,7 +381,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     return Row(
       children: [
         Text(
-          data,
+          title,
           style: TextStyle(
             fontSize: 16.0,
             fontWeight: FontWeight.bold,
