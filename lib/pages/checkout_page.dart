@@ -27,8 +27,7 @@ class CheckoutPage extends StatefulWidget {
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
-  // num balance = 9500000;
-  num balance = 0;
+  num balance = 20000000;
   double grandTotal = 10000000;
 
   // inialisasi
