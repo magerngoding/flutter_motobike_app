@@ -1,11 +1,16 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, unused_local_variable
 
+import 'package:d_session/d_session.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_motobike_app/models/account.dart';
 import 'package:flutter_motobike_app/pages/fragment/browse_fragment.dart';
 import 'package:flutter_motobike_app/pages/fragment/order_fragment.dart';
 import 'package:flutter_motobike_app/pages/fragment/settings_fragment.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+
+import '../common/info.dart';
+import '../sources/chat_source.dart';
 
 class DiscoverPage extends StatefulWidget {
   const DiscoverPage({super.key});
@@ -22,6 +27,16 @@ class _DiscoverPageState extends State<DiscoverPage> {
   ];
 
   final fragmentIndex = 0.obs;
+
+  late final Account account;
+
+  @override
+  void initState() {
+    DSession.getUser().then((value) {
+      account = Account.fomJson(Map.from(value!));
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +83,16 @@ class _DiscoverPageState extends State<DiscoverPage> {
                 icon: 'assets/ic_browse.png',
                 iconOn: 'assets/ic_browse_on.png',
                 hasDot: true,
-                onTap: () {},
+                onTap: () {
+                  Info.netral('Loading...');
+                  ChatSource.openChatRoom(account.uid, account.name)
+                      .then((value) {
+                    Navigator.pushNamed(context, '/chatting', arguments: {
+                      'uid': account.uid,
+                      'userName': account.name,
+                    });
+                  });
+                },
               ),
               buildItemNav(
                 label: 'Settings',
