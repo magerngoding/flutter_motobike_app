@@ -5,6 +5,9 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_motobike_app/models/chat.dart';
 import 'package:gap/gap.dart';
+import 'package:intl/intl.dart';
+
+import '../sources/chat_source.dart';
 
 class ChattingPage extends StatefulWidget {
   final String uid;
@@ -21,7 +24,13 @@ class ChattingPage extends StatefulWidget {
 }
 
 class _ChattingPageState extends State<ChattingPage> {
+  final edtInput = TextEditingController();
+
   late final Stream<QuerySnapshot<Map<String, dynamic>>> streamChats;
+
+  String formatTimestamp(Timestamp timestamp) {
+    return DateFormat('HH:mm d MMM').format(timestamp.toDate());
+  }
 
   @override
   void initState() {
@@ -29,6 +38,11 @@ class _ChattingPageState extends State<ChattingPage> {
         .collection('CS')
         .doc(widget.uid)
         .collection('chats')
+        .orderBy(
+          'timestamp', // fix sorting - dari yang terlama ke yang terbaru
+          descending:
+              true, // step kedua di data setelah reverse pada listview.builder
+        )
         .snapshots(); // ambil data realtime pake snapshots
     super.initState();
   }
@@ -50,10 +64,43 @@ class _ChattingPageState extends State<ChattingPage> {
     );
   }
 
+  Widget buildChats() {
+    return StreamBuilder(
+      stream: streamChats,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (snapshot.data!.docs.isEmpty) {
+          return Center(
+            child: Text('No Chats'),
+          );
+        }
+        final list = snapshot.data!.docs;
+        return ListView.builder(
+          reverse: true, // Halaman kebuka dari bawah
+          padding: const EdgeInsets.only(top: 20),
+          itemCount: list.length,
+          itemBuilder: (context, index) {
+            Chat chat =
+                Chat.fromJson(list[index].data()); // Convert data dari model
+            if (chat.senderId == 'cs') {
+              return chatCS(chat);
+            }
+            return chatUser(chat);
+          },
+        );
+      },
+    );
+  }
+
   Widget chatUser(Chat chat) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
+        Text(chat.timestamp == null ? '' : formatTimestamp(chat.timestamp!)),
         if (chat.bikeDetail != null)
           Column(
             children: [
@@ -86,10 +133,10 @@ class _ChattingPageState extends State<ChattingPage> {
           child: Text(
             chat.message,
             style: TextStyle(
-              fontSize: 16.0,
-              fontWeight: FontWeight.w600,
-              color: Color(0XFF070623),
-            ),
+                fontSize: 16.0,
+                fontWeight: FontWeight.w600,
+                color: Color(0XFF070623),
+                height: 1.8),
           ),
         ),
         Gap(12),
@@ -110,49 +157,129 @@ class _ChattingPageState extends State<ChattingPage> {
               width: 40.0,
               height: 40.0,
             ),
-            Gap(24),
+            Gap(20),
           ],
         ),
       ],
     );
   }
 
-  Widget buildChats() {
-    return StreamBuilder(
-      stream: streamChats,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        if (snapshot.data!.docs.isEmpty) {
-          return Center(
-            child: Text('No Chats'),
-          );
-        }
-        final list = snapshot.data!.docs;
-        return ListView.builder(
-          padding: const EdgeInsets.only(top: 20),
-          itemCount: list.length,
-          itemBuilder: (context, index) {
-            Chat chat =
-                Chat.fromJson(list[index].data()); // Convert data dari model
-            if (chat.senderId == 'cs') {
-              return ListTile(
-                title: Text(chat.message),
-                subtitle: Text(chat.senderId),
-              );
-            }
-            return chatUser(chat);
-          },
-        );
-      },
+  Widget chatCS(Chat chat) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          margin: const EdgeInsets.only(
+            right: 49,
+            left: 24,
+          ),
+          decoration: const BoxDecoration(
+            color: Color(0XFF070623),
+            borderRadius: BorderRadius.all(
+              Radius.circular(
+                16.0,
+              ),
+            ),
+          ),
+          child: Text(
+            chat.message,
+            style: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+                height: 1.8 // Untuk renggangin antara paragraf
+                ),
+          ),
+        ),
+        Gap(12),
+        Row(
+          children: [
+            Gap(24),
+            Image.asset(
+              "assets/chat_cs.png",
+              width: 40.0,
+              height: 40.0,
+            ),
+            Gap(8),
+            Text(
+              'CS Motobike',
+              style: TextStyle(
+                fontSize: 14.0,
+                fontWeight: FontWeight.w600,
+                color: Color(0XFF070623),
+              ),
+            ),
+          ],
+        ),
+        Gap(20),
+      ],
     );
   }
 
   Widget buildInputChat() {
-    return Text('Input Chat');
+    return Container(
+      padding: const EdgeInsets.only(left: 16),
+      margin: const EdgeInsets.fromLTRB(
+        24,
+        24,
+        24,
+        30,
+      ),
+      height: 52,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(
+          Radius.circular(50.0),
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: edtInput, // untuk ambil data textfield
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16.0,
+                color: Color(0XFF070623),
+              ),
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.all(0),
+                isDense: true, // Buat ngerapetin textfield
+                border: InputBorder.none,
+                hintText: 'Write your message...',
+                hintStyle: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 16.0,
+                  color: Color(0XFF070623),
+                ),
+              ),
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              Chat chat = Chat(
+                roomId: widget.uid,
+                message: edtInput.text,
+                receiverId: 'cs',
+                senderId: widget.uid,
+                bikeDetail: null,
+              );
+              ChatSource.send(chat, widget.uid).then(
+                (value) {
+                  edtInput.clear();
+                },
+              );
+            },
+            icon: Image.asset(
+              "assets/ic_send.png",
+              width: 24.0,
+              height: 24.0,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget buildSnippetBike(Map bike) {
